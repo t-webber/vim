@@ -50,3 +50,7 @@ assert_eq!(buffer.as_content(), "hello");
 buffer.update_from_string("<Esc>0rHA, World!");
 assert_eq!(buffer.as_content(), "Hello, World!");
 ```
+
+## Performance
+
+The buffer is internally represented as a `String` and thus, editions can be costly. `String` was chosen because most of use cases are: 1) display the buffer, 2) update the buffer, 3) redisplay the buffer, and this over and over again. There are two choices: optimise the data structure for editions (that are only a subset of updates, e.g. you can move the cursor around, play with history, etc.) or optimise it for display (which is done at every update. That is why `String` was chosen.
