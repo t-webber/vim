@@ -12,6 +12,11 @@ impl<T> History<T> {
         &self.0[self.1.as_value()]
     }
 
+    #[cfg(test)]
+    pub fn as_vec(&self) -> &[T] {
+        &self.0
+    }
+
     /// Returns `true` if the cursor is at the end of the history.
     ///
     /// This means that you can't redo.
@@ -30,18 +35,14 @@ impl<T> History<T> {
         clippy::else_if_without_else,
         reason = "do nothing if entry is the same"
     )]
-    fn save_clone<F: Fn() -> T>(
-        &mut self,
-        cloner: F,
-        is_entry_same_as_cursor: bool,
-    ) {
+    fn save_clone(&mut self, value: T) {
         if self.is_cursor_at_end() {
-            self.0.push(cloner());
+            self.0.push(value);
             self.1.increment_with_capacity_unchecked();
-        } else if !is_entry_same_as_cursor {
+        } else {
             self.1.increment();
             self.0.truncate(self.1.as_value());
-            self.0.push(cloner());
+            self.0.push(value);
         }
     }
 
@@ -59,10 +60,9 @@ impl<T> History<T> {
 impl History<Box<str>> {
     /// Saves the current buffervalue in the history
     pub fn save(&mut self, entry: &str) {
-        self.save_clone(
-            || Box::from(entry),
-            *entry == **self.as_cursor_entry(),
-        );
+        if *entry != **self.as_cursor_entry() {
+            self.save_clone(Box::from(entry));
+        }
     }
 }
 

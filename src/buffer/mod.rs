@@ -8,6 +8,8 @@ mod history;
 mod keymaps;
 /// Handles the vim modes and the keypresses on those modes
 mod mode;
+#[cfg(test)]
+mod tests;
 /// Methods to update the [`Buffer`] with keymaps.
 mod update;
 
