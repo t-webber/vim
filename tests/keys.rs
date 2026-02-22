@@ -108,4 +108,8 @@ dcaret_middle: "i abc def ghi<Esc>bbld^" => " ef ghi",
 
 dinvalid: "d " => "",
 
+dW: "iab  cd ef<Esc>0dW" => "cd ef",
+dW_middle_no_right: "iab  cd ef<Esc>dW" => "ab  cd e",
+dW_middle_right: "iab  cd ef<Esc><Right>dW" => "ab  cd e",
+
 );

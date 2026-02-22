@@ -20,6 +20,10 @@ impl Buffer {
     /// The deleted part is from the current cursor to the cursor after the
     /// [`GoToAction`].
     fn delete(&mut self, goto_action: GoToAction) -> bool {
+        if self.as_cursor() >= self.len() {
+            self.cursor.set(self.len().saturating_sub(1));
+        }
+
         let (min_cursor, max_cursor) = {
             let old_cursor = self.as_cursor();
             if !self.update_cursor(goto_action) {
