@@ -112,4 +112,8 @@ dW: "iab  cd ef<Esc>0dW" => "cd ef",
 dW_middle_no_right: "iab  cd ef<Esc>dW" => "ab  cd e",
 dW_middle_right: "iab  cd ef<Esc><Right>dW" => "ab  cd e",
 
+dB: "iab  cd ef<Esc>0<Right><Right>dB" => "  cd ef",
+dB_space: "i  ab<Esc>0<Right>dB" => " ab",
+dB_start: "iab<Esc>0dB" => "ab",
+
 );
