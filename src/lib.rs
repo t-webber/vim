@@ -39,6 +39,7 @@
     clippy::pattern_type_mismatch,
     clippy::enum_variant_names,
     clippy::missing_trait_methods,
+    clippy::doc_paragraphs_missing_punctuation,
     reason = "chosen style"
 )]
 #![expect(clippy::missing_inline_in_public_items, reason = "bad lint")]
