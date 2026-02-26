@@ -15,10 +15,8 @@ pub const CYAN: &str = "\x1b[36m";
 
 const NORMAL: ModePrompt = ModePrompt { colour: CYAN, prompt: "normal >>> " };
 const INSERT: ModePrompt = ModePrompt { colour: GREEN, prompt: "insert >>> " };
-const UNKNOWN: ModePrompt = ModePrompt { colour: RED, prompt: "unkown >>> " };
 
 const _: () = assert!(NORMAL.prompt.len() == INSERT.prompt.len());
-const _: () = assert!(UNKNOWN.prompt.len() == INSERT.prompt.len());
 const MODE_PROMPT_LEN: usize = NORMAL.prompt.len();
 
 /// Prompt displayed for a given vim mode.
