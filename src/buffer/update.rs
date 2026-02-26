@@ -376,3 +376,18 @@ const fn xor_ident_char(first: char, second: char) -> bool {
 const fn is_ident_char(ch: char) -> bool {
     matches!(ch, '0'..='9' | 'a'..='z' | 'A'..='Z' | '_')
 }
+
+#[cfg(test)]
+mod tests {
+    use crate::Buffer;
+    use crate::buffer::keymaps::GoToAction;
+
+    #[test]
+    fn double_delete() {
+        let mut x = Buffer::from("abc");
+        x.delete(
+            GoToAction::NextOccurrenceOf('c'),
+            Some(GoToAction::NextOccurrenceOf('e')),
+        );
+    }
+}

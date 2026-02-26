@@ -98,7 +98,7 @@ impl Mode {
                     }
                     Actions::OPending(OPending::CombinablePending(action)) =>
                         OPending::DeleteAction(action).into(),
-                    actions @ Actions::OPending(_) => actions,
+                    Actions::OPending(_) => Actions::default(),
                 },
                 OPending::DeleteAction(action) => {
                     let (first, maybe_second) =

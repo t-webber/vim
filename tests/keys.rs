@@ -120,6 +120,7 @@ dB_start: "iab<Esc>0dB" => "ab",
 _f: "iabcabc<Esc>0fcaz" => "abczabc",
 df: "iabcabc<Esc>0dfc" => "abc",
 df_not_found: "iabc<Esc>0dfz" => "abc",
+df_invalid: "iabc<Esc>0drib" => "babc",
 
 _t: "iabcabc<Esc>0tcaz" => "abzcabc",
 dt: "iabcabc<Esc>0dtc" => "cabc",
@@ -132,6 +133,5 @@ dT_not_found: "iabc<Esc>dTz" => "abc",
 _F: "iabcabc<Esc>Fcaz" => "abczabc",
 dF: "iabcabc<Esc>dFc" => "abc",
 dF_not_found: "iabc<Esc>dFz" => "abc",
-
 
 );
