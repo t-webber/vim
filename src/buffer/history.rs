@@ -31,10 +31,6 @@ impl<T> History<T> {
     }
 
     /// Saves a clone if it is different.
-    #[expect(
-        clippy::else_if_without_else,
-        reason = "do nothing if entry is the same"
-    )]
     fn save_clone(&mut self, value: T) {
         if self.is_cursor_at_end() {
             self.0.push(value);

@@ -6,6 +6,7 @@ use crate::Mode;
 use crate::buffer::api::Buffer;
 use crate::buffer::bounded_usize::BoundedUsize;
 use crate::buffer::keymaps::{Action, GoToAction};
+use crate::buffer::mode::Actions;
 use crate::event_parser::{EventParsingError, parse_events};
 
 impl Buffer {
@@ -15,18 +16,27 @@ impl Buffer {
         self.len() - self.as_cursor()
     }
 
-    /// Deletes the part of the buffer represented by a [`GoToAction`]
+    /// Deletes the part of the buffer represented by one or two [`GoToAction`]
     ///
     /// The deleted part is from the current cursor to the cursor after the
     /// [`GoToAction`].
-    fn delete(&mut self, goto_action: GoToAction) -> bool {
+    fn delete(
+        &mut self,
+        first: GoToAction,
+        maybe_second: Option<GoToAction>,
+    ) -> bool {
         if self.as_cursor() >= self.len() {
             self.cursor.set(self.len().saturating_sub(1));
         }
 
         let (min_cursor, max_cursor) = {
             let old_cursor = self.as_cursor();
-            if !self.update_cursor(goto_action) {
+            if !self.update_cursor(first) {
+                return false;
+            }
+            if let Some(second) = maybe_second
+                && !self.update_cursor(second)
+            {
                 return false;
             }
             let new_cursor = self.as_cursor();
@@ -290,15 +300,21 @@ impl Buffer {
 
     /// Same as [`Self::update`] but without updating the history.
     fn update_no_save(&mut self, event: &Event) -> bool {
-        let events = self.as_mode().handle_event(event, &mut self.pending);
+        match self.as_mode().handle_event(event, take(&mut self.pending)) {
+            Actions::OPending(new_pending) => {
+                self.pending = Some(new_pending);
+                true
+            }
+            Actions::List(list) => {
+                for action in &list {
+                    if !self.update_once(*action) {
+                        return false;
+                    }
+                }
 
-        for action in &events {
-            if !self.update_once(*action) {
-                return false;
+                !list.is_empty()
             }
         }
-
-        !events.is_empty()
     }
 
     /// Updates the buffer with one [`Action`]
@@ -346,7 +362,7 @@ impl Buffer {
             Action::Undo => self.undo(),
             Action::Redo => self.redo(),
             Action::GoTo(goto_action) => self.update_cursor(goto_action),
-            Action::Delete(goto_action) => self.delete(goto_action),
+            Action::Delete(first, second) => self.delete(first, second),
         }
     }
 }

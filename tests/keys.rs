@@ -50,6 +50,7 @@ t: "iabcabc<Esc>0tcad<Esc>ltcae" => "abdcabec",
 F_not_found: "iabc<Esc><Left>Fzad" => "abdc",
 T_not_found: "iabc<Esc><Left>Tzad" => "abdc",
 F: "iabcabc<Esc>Faad<Esc>hFaae" => "aebcadbc",
+simple_F: "iabc<Esc>Fbid" => "adbc",
 T: "iabcabc<Esc>Taad<Esc>hhTaae" => "abecabdc",
 x: "iabcd<Esc>x<Left>x" => "ac",
 x_empty: "x" => "",
@@ -115,5 +116,10 @@ dW_middle_right: "iab  cd ef<Esc><Right>dW" => "ab  cd e",
 dB: "iab  cd ef<Esc>0<Right><Right>dB" => "  cd ef",
 dB_space: "i  ab<Esc>0<Right>dB" => " ab",
 dB_start: "iab<Esc>0dB" => "ab",
+
+_f: "iabcabc<Esc>0fcaz" => "abczabc",
+df: "iabcabc<Esc>0dfc" => "abc",
+df_not_found: "iabc<Esc>0dfz" => "abc",
+
 
 );

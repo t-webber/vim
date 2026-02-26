@@ -7,7 +7,8 @@ mod normal;
 /// Defines the types and traits to organise modes and how the process events.
 mod traits;
 
-pub use crate::buffer::mode::all::Mode;
+pub use all::Mode;
+pub use traits::Actions;
 
 #[cfg(test)]
 mod tests;

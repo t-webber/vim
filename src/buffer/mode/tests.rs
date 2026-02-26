@@ -1,12 +1,13 @@
 use crossterm::event::{Event, KeyCode, KeyEvent, KeyEventKind, KeyModifiers};
 
-use crate::buffer::keymaps::{Action, GoToAction, OPending};
+use crate::buffer::keymaps::{Action, CombinablePending, GoToAction, OPending};
+use crate::buffer::mode::Actions;
 use crate::buffer::mode::all::Mode;
 
 fn expect_action(mode: Mode, event: Event, action: &[Action]) {
-    let real_actions = mode.handle_event(&event, &mut None);
+    let real_actions = mode.handle_event(&event, None);
 
-    assert_eq!(real_actions, action);
+    assert_eq!(real_actions, action.to_vec().into());
 }
 
 fn code_event(code: KeyCode) -> Event {
@@ -113,9 +114,18 @@ fn not_press() {
 }
 
 #[test]
-fn pending_cancelled() {
-    let mut pending = Some(OPending::FindNext);
+fn combinable_pending_cancelled() {
+    let pending =
+        Some(OPending::CombinablePending(CombinablePending::FindNext));
     let event = code_event(KeyCode::Esc);
-    assert_eq!(Mode::Normal.handle_event(&event, &mut pending), vec![]);
-    assert_eq!(pending, None);
+    let actions = Mode::Normal.handle_event(&event, pending);
+    assert_eq!(actions, Actions::default());
+}
+
+#[test]
+fn pending_cancelled() {
+    let pending = Some(OPending::ReplaceOne);
+    let event = code_event(KeyCode::Esc);
+    let actions = Mode::Normal.handle_event(&event, pending);
+    assert_eq!(actions, Actions::default());
 }

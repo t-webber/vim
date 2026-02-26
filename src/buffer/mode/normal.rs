@@ -1,6 +1,6 @@
 use crossterm::event::KeyCode;
 
-use crate::buffer::keymaps::{Action, GoToAction, OPending};
+use crate::buffer::keymaps::{Action, CombinablePending, GoToAction, OPending};
 use crate::buffer::mode::all::Mode;
 use crate::buffer::mode::traits::{Actions, HandleKeyPress};
 
@@ -23,8 +23,8 @@ impl HandleKeyPress for Normal {
             .into(),
             KeyCode::Backspace | KeyCode::Char('h') => GoToAction::Left.into(),
             KeyCode::Char('l') => GoToAction::Right.into(),
-            KeyCode::Char('f') => OPending::FindNext.into(),
-            KeyCode::Char('t') => OPending::FindNextDecrement.into(),
+            KeyCode::Char('f') => CombinablePending::FindNext.into(),
+            KeyCode::Char('t') => CombinablePending::FindNextDecrement.into(),
             KeyCode::Char('r') => OPending::ReplaceOne.into(),
             KeyCode::Char('0') => GoToAction::Bol.into(),
             KeyCode::Char('^') => GoToAction::FirstNonSpace.into(),
@@ -54,8 +54,9 @@ impl HandleKeyPress for Normal {
             KeyCode::Char('X') => Action::DeletePreviousChar.into(),
             KeyCode::Char('S') =>
                 vec![Action::DeleteLine, Mode::Insert.into()].into(),
-            KeyCode::Char('F') => OPending::FindPrevious.into(),
-            KeyCode::Char('T') => OPending::FindPreviousIncrement.into(),
+            KeyCode::Char('F') => CombinablePending::FindPrevious.into(),
+            KeyCode::Char('T') =>
+                CombinablePending::FindPreviousIncrement.into(),
             KeyCode::Char('W') => GoToAction::NextWORD.into(),
             KeyCode::Char('B') => GoToAction::PreviousWORD.into(),
             _ => Actions::default(),

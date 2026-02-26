@@ -5,7 +5,7 @@ use crate::Mode;
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub enum Action {
     /// Delete
-    Delete(GoToAction),
+    Delete(GoToAction, Option<GoToAction>),
     /// Deletes the whole line
     DeleteLine,
     /// Deletes the char after the cursor
@@ -69,8 +69,23 @@ pub enum GoToAction {
 /// Action that is pending for another keypress
 #[derive(Debug, PartialEq, Eq, Clone, Copy)]
 pub enum OPending {
-    /// Delete pending
+    /// Pending action that only requires 1 character to form a goto action.
+    ///
+    /// Combinable with delete, see [`Self::DeleteAction`].
+    CombinablePending(CombinablePending),
+    /// Delete pending (`d` pressed, waiting for go-to action)
     Delete,
+    /// Delete pending and go-to action pending too (e.g. `df` pressed).
+    DeleteAction(CombinablePending),
+    /// Replace one character
+    ReplaceOne,
+}
+
+/// Pending action that only requires 1 character to form a goto action.
+///
+/// Combinable with delete, see [`OPending::DeleteAction`].
+#[derive(Debug, PartialEq, Eq, Clone, Copy)]
+pub enum CombinablePending {
     /// Find next char that is equal to...
     FindNext,
     /// Find next char that is equal to... and decrement
@@ -79,6 +94,4 @@ pub enum OPending {
     FindPrevious,
     /// Find previous char that is equal to... and increment
     FindPreviousIncrement,
-    /// Replace one character
-    ReplaceOne,
 }

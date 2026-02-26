@@ -1,8 +1,6 @@
-use core::mem::take;
-
 use crossterm::event::{Event, KeyCode, KeyEvent, KeyModifiers};
 
-use crate::buffer::keymaps::{Action, GoToAction, OPending};
+use crate::buffer::keymaps::{Action, CombinablePending, GoToAction, OPending};
 use crate::buffer::mode::insert::Insert;
 use crate::buffer::mode::normal::Normal;
 use crate::buffer::mode::traits::{Actions, HandleKeyPress};
@@ -19,22 +17,33 @@ pub enum Mode {
 }
 
 impl Mode {
+    /// Handles opending event for [`CombinablePending`]
+    const fn handle_combinable_opending_char_event(
+        combinable_pending: CombinablePending,
+        ch: char,
+    ) -> (GoToAction, Option<GoToAction>) {
+        match combinable_pending {
+            CombinablePending::FindNext =>
+                (GoToAction::NextOccurrenceOf(ch), None),
+            CombinablePending::FindNextDecrement =>
+                (GoToAction::NextOccurrenceOf(ch), Some(GoToAction::Left)),
+            CombinablePending::FindPrevious =>
+                (GoToAction::PreviousOccurrenceOf(ch), None),
+            CombinablePending::FindPreviousIncrement =>
+                (GoToAction::PreviousOccurrenceOf(ch), Some(GoToAction::Right)),
+        }
+    }
+
     /// Handle incoming terminal events on any kind.
     pub(crate) fn handle_event(
         self,
         event: &Event,
-        pending: &mut Option<OPending>,
-    ) -> Vec<Action> {
-        match take(pending).map_or_else(
+        pending: Option<OPending>,
+    ) -> Actions {
+        pending.map_or_else(
             || self.handle_non_opending_event(event),
-            |old_opending| self.handle_opending_event(old_opending, event),
-        ) {
-            Actions::List(actions) => actions,
-            Actions::OPending(opending) => {
-                *pending = Some(opending);
-                vec![]
-            }
-        }
+            |old_pending| self.handle_opending_event(old_pending, event),
+        )
     }
 
     /// Handles the terminal events when not in [`OPending`] mode
@@ -67,30 +76,41 @@ impl Mode {
             && let KeyCode::Char(ch) = key_event.code
         {
             match opending {
-                OPending::FindNext => GoToAction::NextOccurrenceOf(ch).into(),
-                OPending::FindNextDecrement => vec![
-                    GoToAction::NextOccurrenceOf(ch).into(),
-                    GoToAction::Left.into(),
-                ]
-                .into(),
-                OPending::FindPrevious =>
-                    GoToAction::PreviousOccurrenceOf(ch).into(),
-                OPending::FindPreviousIncrement => vec![
-                    GoToAction::PreviousOccurrenceOf(ch).into(),
-                    GoToAction::Right.into(),
-                ]
-                .into(),
+                OPending::CombinablePending(action) => {
+                    let (first, maybe_second) =
+                        Self::handle_combinable_opending_char_event(action, ch);
+                    maybe_second.map_or_else(
+                        || first.into(),
+                        |second| vec![first.into(), second.into()].into(),
+                    )
+                }
                 OPending::ReplaceOne => Action::ReplaceWith(ch).into(),
-                OPending::Delete => {
-                    let actions = self.handle_non_opending_event(event);
-                    if let Actions::List(list) = &actions
-                        && let &[action] = list.as_slice()
-                        && let Action::GoTo(goto_action) = action
-                    {
-                        Action::Delete(goto_action).into()
-                    } else {
-                        actions
+                OPending::Delete => match self.handle_non_opending_event(event)
+                {
+                    Actions::List(list) => {
+                        if let &[action] = list.as_slice()
+                            && let Action::GoTo(goto_action) = action
+                        {
+                            Action::Delete(goto_action, None).into()
+                        } else {
+                            list.into()
+                        }
                     }
+                    Actions::OPending(OPending::CombinablePending(action)) =>
+                        OPending::DeleteAction(action).into(),
+                    actions @ Actions::OPending(_) => actions,
+                },
+                OPending::DeleteAction(action) => {
+                    let (first, maybe_second) =
+                        Self::handle_combinable_opending_char_event(action, ch);
+                    let second = match action {
+                        CombinablePending::FindNext => Some(GoToAction::Right),
+                        CombinablePending::FindNextDecrement => None,
+                        CombinablePending::FindPrevious
+                        | CombinablePending::FindPreviousIncrement =>
+                            maybe_second,
+                    };
+                    Action::Delete(first, second).into()
                 }
             }
         } else {

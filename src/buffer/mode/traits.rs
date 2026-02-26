@@ -1,9 +1,10 @@
 use crossterm::event::KeyCode;
 
 use crate::Mode;
-use crate::buffer::keymaps::{Action, GoToAction, OPending};
+use crate::buffer::keymaps::{Action, CombinablePending, GoToAction, OPending};
 
 /// Actions to be taken as a result of a keypress
+#[derive(Debug, PartialEq, Eq)]
 pub enum Actions {
     /// List of buffer actions to be followed
     List(Vec<Action>),
@@ -37,13 +38,19 @@ impl From<Action> for Actions {
 
 impl From<Mode> for Actions {
     fn from(action: Mode) -> Self {
-        vec![action.into()].into()
+        Action::from(action).into()
     }
 }
 
 impl From<GoToAction> for Actions {
     fn from(action: GoToAction) -> Self {
-        vec![action.into()].into()
+        Action::from(action).into()
+    }
+}
+
+impl From<CombinablePending> for Actions {
+    fn from(action: CombinablePending) -> Self {
+        Self::OPending(OPending::CombinablePending(action))
     }
 }
 

@@ -1,5 +1,5 @@
 /// `usize` bounded by a value, for safe incrementation and decrementation.
-#[derive(Default, Debug)]
+#[derive(Default, Debug, Copy, Clone)]
 pub struct BoundedUsize {
     /// Maximum value the `value` field can hold.
     max_value: usize,
