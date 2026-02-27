@@ -58,6 +58,23 @@ impl Buffer {
         true
     }
 
+    /// Moves the cursor to the end of the current or next word.
+    fn goto_end_word(&mut self) {
+        let mut cursor = self.as_cursor();
+        let mut chars = self.as_content().char_indices().skip(self.as_cursor());
+        while let Some((idx, next)) = chars.next()
+            && !next.is_ascii_alphabetic()
+        {
+            cursor = idx;
+        }
+        while let Some((idx, next)) = chars.next()
+            && next.is_ascii_alphabetic()
+        {
+            cursor = idx;
+        }
+        self.cursor.set(cursor);
+    }
+
     /// Moves the cursor to the beginning of the next WORD.
     #[expect(non_snake_case, reason = "vim wording")]
     fn goto_next_WORD(&mut self) {
@@ -258,6 +275,7 @@ impl Buffer {
             GoToAction::NextWord => self.goto_next_word(),
             GoToAction::PreviousWORD => self.goto_previous_WORD(),
             GoToAction::PreviousWord => self.goto_previous_word(),
+            GoToAction::EndWord => self.goto_end_word(),
         }
         true
     }
