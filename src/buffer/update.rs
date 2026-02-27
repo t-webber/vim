@@ -81,12 +81,12 @@ impl Buffer {
         let mut cursor = self.as_cursor();
         let mut chars = self.as_content().char_indices().skip(self.as_cursor());
         while let Some((idx, next)) = chars.next()
-            && !next.is_ascii_alphabetic()
+            && !is_ident_char(next)
         {
             cursor = idx;
         }
         while let Some((idx, next)) = chars.next()
-            && next.is_ascii_alphabetic()
+            && is_ident_char(next)
         {
             cursor = idx;
         }
