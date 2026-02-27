@@ -60,6 +60,7 @@ impl HandleKeyPress for Normal {
                 CombinablePending::FindPreviousIncrement.into(),
             KeyCode::Char('W') => GoToAction::NextWORD.into(),
             KeyCode::Char('B') => GoToAction::PreviousWORD.into(),
+            KeyCode::Char('E') => GoToAction::EndWORD.into(),
             _ => Actions::default(),
         }
     }

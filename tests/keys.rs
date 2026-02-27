@@ -139,4 +139,9 @@ e_not_in_word: "i abc def<Esc>0eaz" => " abcz def",
 e_symbols: "iabc, def<Esc>0eaz" => "abcz, def",
 e_end: "iabc<Esc>eaz" => "abcz",
 
+E: "iabc def<Esc>0Eaz" => "abcz def",
+E_not_in_word: "i abc def<Esc>0Eaz" => " abcz def",
+E_symbols: "iabc, def<Esc>0Eaz" => "abc,z def",
+E_end: "iabc<Esc>Eaz" => "abcz",
+
 );

@@ -44,7 +44,9 @@ impl From<Mode> for Action {
 pub enum GoToAction {
     /// Beginning of line (column 0), reached with `0`
     Bol,
-    /// End of current word, reached with `e`
+    /// End of current or next WORD, reached with `E`
+    EndWORD,
+    /// End of current or next word, reached with `e`
     EndWord,
     /// End of line, like with `$` and `A`
     Eol,
