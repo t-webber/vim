@@ -64,9 +64,9 @@ impl Buffer {
         let mut chars =
             self.as_content().char_indices().skip(self.as_cursor()).skip(1);
         if let Some(..) = chars.find(|(_, ch)| !ch.is_whitespace())
-            && let Some((cursor, _)) = chars.find(|(_, ch)| ch.is_whitespace())
+            && let Some((idx, _)) = chars.find(|(_, ch)| ch.is_whitespace())
         {
-            self.cursor.set(cursor);
+            self.cursor.set(idx);
             self.cursor.decrement();
         } else {
             self.cursor.set_to_max();
@@ -78,10 +78,10 @@ impl Buffer {
         let mut chars =
             self.as_content().char_indices().skip(self.as_cursor()).skip(1);
         if let Some((_, cursor_ch)) = chars.find(|(_, ch)| !ch.is_whitespace())
-            && let Some((cursor, _)) =
+            && let Some((idx, _)) =
                 chars.find(|(_, ch)| xor_ident_char(*ch, cursor_ch))
         {
-            self.cursor.set(cursor);
+            self.cursor.set(idx);
             self.cursor.decrement();
         } else {
             self.cursor.set_to_max();
@@ -92,13 +92,10 @@ impl Buffer {
     #[expect(non_snake_case, reason = "vim wording")]
     fn goto_next_WORD(&mut self) {
         let mut chars = self.as_content().char_indices().skip(self.as_cursor());
-        if let Some((_, cursor_ch)) = chars.next()
-            && cursor_ch.is_whitespace()
+        if let Some(..) = chars.find(|(_, ch)| ch.is_whitespace())
             && let Some((idx, _)) = chars.find(|(_, ch)| !ch.is_whitespace())
         {
             self.cursor.set(idx);
-        } else if self.update_cursor(GoToAction::NextOccurrenceOf(' ')) {
-            self.goto_next_WORD();
         } else {
             self.cursor.set_to_max();
         }
@@ -109,11 +106,11 @@ impl Buffer {
         let mut chars = self.as_content().char_indices().skip(self.as_cursor());
         if let Some((_, cursor_ch)) = chars.next()
             && let Some((idx, next_ch)) =
-                chars.find(|(_idx, ch)| xor_ident_char(cursor_ch, *ch))
+                chars.find(|(_, ch)| xor_ident_char(cursor_ch, *ch))
         {
             if next_ch.is_whitespace() {
                 if let Some((non_space_idx, _)) =
-                    chars.find(|(_idx, ch)| !ch.is_whitespace())
+                    chars.find(|(_, ch)| !ch.is_whitespace())
                 {
                     self.cursor.set(non_space_idx);
                 } else {
@@ -132,16 +129,10 @@ impl Buffer {
     fn goto_previous_WORD(&mut self) {
         let mut chars =
             self.as_content().char_indices().rev().skip(self.as_end_index());
-        if let Some((_, cursor_ch)) = chars.next()
-            && cursor_ch.is_whitespace()
+        if let Some(..) = chars.find(|(_, ch)| !ch.is_whitespace())
+            && let Some((idx, _)) = chars.find(|(_, ch)| ch.is_whitespace())
         {
-            if let Some((idx, _)) = chars.find(|(_, ch)| !ch.is_whitespace()) {
-                self.cursor.set(idx);
-                self.goto_previous_WORD();
-            } else {
-                self.cursor.set(0);
-            }
-        } else if self.update_cursor(GoToAction::PreviousOccurrenceOf(' ')) {
+            self.cursor.set(idx);
             self.cursor.increment();
         } else {
             self.cursor.set(0);
@@ -152,28 +143,14 @@ impl Buffer {
     fn goto_previous_word(&mut self) {
         let mut chars =
             self.as_content().char_indices().rev().skip(self.as_end_index());
-        if let Some((_, cursor_ch)) = chars.next() {
-            if cursor_ch.is_whitespace()
-                && let Some((idx, _)) =
-                    chars.find(|(_, ch)| !ch.is_whitespace())
-            {
-                let is_word_single_char =
-                    chars.next().is_none_or(|ch| ch.1.is_whitespace());
-                self.cursor.set(idx);
-                if !is_word_single_char {
-                    self.goto_previous_word();
-                }
-                return;
-            }
-            if let Some((idx, _)) =
-                chars.find(|(_, ch)| xor_ident_char(cursor_ch, *ch))
-                && idx < self.as_cursor()
-            {
-                self.cursor.set(idx);
-                self.cursor.increment();
-            } else {
-                self.cursor.set(0);
-            }
+        if let Some((_, word_ch)) = chars.find(|(_, ch)| !ch.is_whitespace())
+            && let Some((idx, _)) =
+                chars.find(|(_, ch)| xor_ident_char(word_ch, *ch))
+        {
+            self.cursor.set(idx);
+            self.cursor.increment();
+        } else {
+            self.cursor.set(0);
         }
     }
 
