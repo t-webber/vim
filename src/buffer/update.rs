@@ -61,36 +61,31 @@ impl Buffer {
     /// Moves the cursor to the end of the current or next word.
     #[expect(non_snake_case, reason = "vim wording")]
     fn goto_end_WORD(&mut self) {
-        let mut cursor = self.as_cursor();
-        let mut chars = self.as_content().char_indices().skip(self.as_cursor());
-        while let Some((idx, next)) = chars.next()
-            && next.is_whitespace()
+        let mut chars =
+            self.as_content().char_indices().skip(self.as_cursor()).skip(1);
+        if let Some(..) = chars.find(|(_, ch)| !ch.is_whitespace())
+            && let Some((cursor, _)) = chars.find(|(_, ch)| ch.is_whitespace())
         {
-            cursor = idx;
+            self.cursor.set(cursor);
+            self.cursor.decrement();
+        } else {
+            self.cursor.set_to_max();
         }
-        while let Some((idx, next)) = chars.next()
-            && !next.is_whitespace()
-        {
-            cursor = idx;
-        }
-        self.cursor.set(cursor);
     }
 
     /// Moves the cursor to the end of the current or next word.
     fn goto_end_word(&mut self) {
-        let mut cursor = self.as_cursor();
-        let mut chars = self.as_content().char_indices().skip(self.as_cursor());
-        while let Some((idx, next)) = chars.next()
-            && !is_ident_char(next)
+        let mut chars =
+            self.as_content().char_indices().skip(self.as_cursor()).skip(1);
+        if let Some((_, cursor_ch)) = chars.find(|(_, ch)| !ch.is_whitespace())
+            && let Some((cursor, _)) =
+                chars.find(|(_, ch)| xor_ident_char(*ch, cursor_ch))
         {
-            cursor = idx;
+            self.cursor.set(cursor);
+            self.cursor.decrement();
+        } else {
+            self.cursor.set_to_max();
         }
-        while let Some((idx, next)) = chars.next()
-            && is_ident_char(next)
-        {
-            cursor = idx;
-        }
-        self.cursor.set(cursor);
     }
 
     /// Moves the cursor to the beginning of the next WORD.

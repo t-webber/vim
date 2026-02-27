@@ -139,11 +139,15 @@ e_not_in_word: "i abc def<Esc>0eaz" => " abcz def",
 e_symbols: "iabc, def<Esc>0eaz" => "abcz, def",
 e_end: "iabc<Esc>eaz" => "abcz",
 e_num_under: "ia0b_c2d, <Esc>0eaz" => "a0b_c2dz, ",
+e_double_symbols: "iabc!!def <Esc>0ea.<Esc>ea.<Esc>ea." => "abc.!!.def. ",
+e_end_of: "ia b<Esc>0eac" => "a bc",
 
 E: "iabc def<Esc>0Eaz" => "abcz def",
 E_not_in_word: "i abc def<Esc>0Eaz" => " abcz def",
 E_symbols: "iabc, def<Esc>0Eaz" => "abc,z def",
 E_end: "iabc<Esc>Eaz" => "abcz",
 E_num_under: "ia0b_c2d, <Esc>0Eaz" => "a0b_c2d,z ",
+E_double_symbols: "iabc!!def <Esc>0Ea.<Esc>Ea." => "abc!!def. .",
+E_end_of: "ia b<Esc>0Eac" => "a bc",
 
 );
