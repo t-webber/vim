@@ -172,6 +172,19 @@ impl Buffer {
         }
     }
 
+    /// Remove the character under the current cursor and replace it by another
+    /// one.
+    fn replace_ch<F: Fn(char) -> char>(&mut self, replace: F) -> bool {
+        if self.is_empty() {
+            false
+        } else {
+            // PERF: string characters are copied twice.
+            let old = self.content.remove(self.as_cursor());
+            self.content.insert(self.as_cursor(), replace(old));
+            true
+        }
+    }
+
     /// Adds the current buffer to the history, if it is different from the last
     /// entry.
     fn save_to_history(&mut self) {
@@ -369,16 +382,18 @@ impl Buffer {
                 take(&mut self.cursor);
                 true
             }
-            Action::ReplaceWith(ch) => {
-                // PERF: string characters are copied twice.
-                self.content.remove(self.as_cursor());
-                self.content.insert(self.as_cursor(), ch);
-                true
-            }
+            Action::ReplaceWith(ch) => self.replace_ch(|_| ch),
             Action::Undo => self.undo(),
             Action::Redo => self.redo(),
             Action::GoTo(goto_action) => self.update_cursor(goto_action),
             Action::Delete(first, second) => self.delete(first, second),
+            Action::ToggleCapitalisation => self.replace_ch(|old| {
+                if old.is_ascii_lowercase() {
+                    old.to_ascii_uppercase()
+                } else {
+                    old.to_ascii_lowercase()
+                }
+            }),
         }
     }
 }

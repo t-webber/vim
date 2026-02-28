@@ -58,6 +58,7 @@ X: "iabcd<Esc>X<Left>X" => "bd",
 s: "iabcd<Esc>se<Esc>hsf" => "abfe",
 S: "iabcdef<Esc>hhhSghij" => "ghij",
 r: "iabcd<Esc>Fbre" => "aecd",
+r_empty: "rx" => "",
 
 w: "ibc   def::(Bl<Esc>0wa.<Esc>lwa.<Esc>lwa.<Esc>lwa." => "bc   d.ef:.:(B.l.",
 w_end_space: "iab <Esc>0wa." => "ab .",
@@ -161,5 +162,9 @@ dE_symbol: "iabc!def<Esc>0dE" => "",
 dE_symbol_word: "i(:)abc<Esc>0dE" => "",
 dE_empty: "i   <Esc>0dE" => "",
 dE_end: "iab(:) de<Esc>0dE" => " de",
+
+tilde: "ia<Esc>~" => "A",
+tilde_invalid: "i(<Esc>~" => "(",
+tilde_empty: "~" => "",
 
 );

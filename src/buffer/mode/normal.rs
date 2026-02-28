@@ -34,6 +34,7 @@ impl HandleKeyPress for Normal {
             KeyCode::Char('e') => GoToAction::EndWord.into(),
             KeyCode::Char('u') => Action::Undo.into(),
             KeyCode::Char('d') => OPending::Delete.into(),
+            KeyCode::Char('~') => Action::ToggleCapitalisation.into(),
             _ => Actions::default(),
         }
     }
