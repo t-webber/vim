@@ -17,6 +17,7 @@ impl HandleKeyPress for Normal {
             KeyCode::Char('a') =>
                 vec![GoToAction::Right.into(), Mode::Insert.into()].into(),
             KeyCode::Char('b') => GoToAction::BeginningOfWord.into(),
+            KeyCode::Char('c') => OPending::Change.into(),
             KeyCode::Char('d') => OPending::Delete.into(),
             KeyCode::Char('e') => GoToAction::EndWord.into(),
             KeyCode::Char('f') => CombinablePending::FindNext.into(),

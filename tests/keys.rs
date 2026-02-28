@@ -192,4 +192,65 @@ gE_words: "iabcd efgh<Esc>gEa." => "abcd. efgh",
 gE_one_word: "i   word<Esc>gEi." => ".   word",
 gE_no_space: "iabcdef<Esc>gEi." => ".abcdef",
 
+cw: "iabc. z<Esc>0cwe" => "e. z",
+cW: "iabc. z<Esc>0cWe" => "ez",
+
+cc: "iabc<Esc>cc" => "",
+cc_insert: "iabc<Esc>ccdef" => "def",
+
+c0_empty: "c0" => "",
+c0_start: "iabc<Esc>0c0d" => "dabc",
+c0_middle: "i abc def ghi<Esc>bbc0j" => "jdef ghi",
+c0_end: "iabc def <Esc>c0g" => "g ",
+c0_insert: "iabc<Esc>c0def" => "defc",
+
+cdollar_empty: "c$" => "",
+cdollar_start: "iabc def<Esc>0c$" => "",
+cdollar_end: "iabc def<Esc>c$" => "abc de",
+cdollar_middle: "iabc def<Esc>hhhhc$" => "ab",
+cdollar_insert: "iabc def<Esc>0c$ghi" => "ghi",
+
+ccaret_empty: "c^" => "",
+ccaret_end: "i  abc<Esc>c^" => "  c",
+ccaret_start: "iabc<Esc>0c^" => "abc",
+ccaret_spaces_only: "i    <Esc>c^" => "   ",
+ccaret_middle: "i abc def ghi<Esc>bblc^" => " ef ghi",
+
+cb_middle: "iabc def<Esc>cb" => "abc f",
+cb_start: "iabc<Esc>0cb" => "abc",
+cb_leading_space: "i  abc<Esc>cb" => "  c",
+cb_single_char: "i a b<Esc>cb" => " b",
+cb_single_char_end: "i a b <Esc>cb" => " a  ",
+cb_insert: "iabc def<Esc>cbx" => "abc xf",
+
+cB: "iab  cd ef<Esc>0<Right><Right>cB" => "  cd ef",
+cB_space: "i  ab<Esc>0<Right>cB" => " ab",
+cB_start: "iab<Esc>0cB" => "ab",
+
+ce_space: "iabc def<Esc>0ce" => " def",
+ce_symbol: "iabc!def<Esc>0ce" => "!def",
+ce_symbol_word: "i(:)abc<Esc>0ce" => "abc",
+ce_empty: "i   <Esc>0ce" => "",
+ce_end: "iab(:) de<Esc>0ce" => "(:) de",
+ce_insert: "iabc def<Esc>0cex" => "x def",
+
+cE_space: "iabc def<Esc>0cE" => " def",
+cE_symbol: "iabc!def<Esc>0cE" => "",
+cE_symbol_word: "i(:)abc<Esc>0cE" => "",
+cE_empty: "i   <Esc>0cE" => "",
+cE_end: "iab(:) de<Esc>0cE" => " de",
+
+cf: "iabcabc<Esc>0cfc" => "abc",
+cf_not_found: "iabc<Esc>0cfz" => "abc",
+cf_insert: "iabcabc<Esc>0cfcx" => "xabc",
+
+ct: "iabcabc<Esc>0ctc" => "cabc",
+ct_not_found: "iabc<Esc>0ctz" => "abc",
+
+cT: "iabcabc<Esc>cTc" => "abcc",
+cT_not_found: "iabc<Esc>cTz" => "abc",
+
+cF: "iabcabc<Esc>cFc" => "abc",
+cF_not_found: "iabc<Esc>cFz" => "abc",
+
 );

@@ -90,39 +90,83 @@ impl Mode {
                     )
                 }
                 OPending::ReplaceOne => Action::ReplaceWith(ch).into(),
-                OPending::Delete => match self.handle_non_opending_event(event)
-                {
-                    Actions::List(list) => {
-                        if let &[action] = list.as_slice()
-                            && let Action::GoTo(goto_action) = action
-                        {
-                            Action::Delete(goto_action, None).into()
-                        } else {
-                            list.into()
-                        }
-                    }
-                    Actions::OPending(OPending::CombinablePending(action)) =>
-                        OPending::DeleteAction(action).into(),
-                    Actions::OPending(OPending::Delete) =>
-                        Action::DeleteLine.into(),
-                    Actions::OPending(_) => Actions::default(),
-                },
                 OPending::DeleteAction(action) => {
-                    let (first, maybe_second) =
-                        Self::handle_combinable_opending_char_event(action, ch);
-                    let second = match action {
-                        CombinablePending::FindNext => Some(GoToAction::Right),
-                        CombinablePending::FindNextDecrement => None,
-                        CombinablePending::FindPrevious
-                        | CombinablePending::FindPreviousIncrement =>
-                            maybe_second,
-                    };
+                    let (first, second) =
+                        Self::handle_operator_action(action, ch);
                     Action::Delete(first, second).into()
                 }
+                OPending::ChangeAction(action) => {
+                    let (first, second) =
+                        Self::handle_operator_action(action, ch);
+                    vec![Action::Delete(first, second), Self::Insert.into()]
+                        .into()
+                }
+                OPending::Change => self.handle_operator(
+                    event,
+                    OPending::Change,
+                    vec![Action::DeleteLine, Self::Insert.into()].into(),
+                    OPending::ChangeAction,
+                    |goto_action| {
+                        vec![
+                            Action::Delete(goto_action, None),
+                            Self::Insert.into(),
+                        ]
+                        .into()
+                    },
+                ),
+                OPending::Delete => self.handle_operator(
+                    event,
+                    OPending::Delete,
+                    Action::DeleteLine.into(),
+                    OPending::DeleteAction,
+                    |goto_action| Action::Delete(goto_action, None).into(),
+                ),
             }
         } else {
             Actions::default()
         }
+    }
+
+    /// Handle operator events (`d`, `c`, etc.)
+    fn handle_operator(
+        self,
+        event: &Event,
+        opending: OPending,
+        actions: Actions,
+        make_opending: impl Fn(CombinablePending) -> OPending,
+        make_action: impl Fn(GoToAction) -> Actions,
+    ) -> Actions {
+        match self.handle_non_opending_event(event) {
+            Actions::List(list) => {
+                if let &[list_action] = list.as_slice()
+                    && let Action::GoTo(goto_action) = list_action
+                {
+                    make_action(goto_action)
+                } else {
+                    list.into()
+                }
+            }
+            Actions::OPending(OPending::CombinablePending(combinable)) =>
+                make_opending(combinable).into(),
+            Actions::OPending(pending) if pending == opending => actions,
+            Actions::OPending(_) => Actions::default(),
+        }
+    }
+
+    /// Handle operator action events (`dw`, `cw`, etc.)
+    const fn handle_operator_action(
+        action: CombinablePending,
+        ch: char,
+    ) -> (GoToAction, Option<GoToAction>) {
+        let (first, maybe_second) =
+            Self::handle_combinable_opending_char_event(action, ch);
+        let second = match action {
+            CombinablePending::FindNext => Some(GoToAction::Right),
+            CombinablePending::FindNextDecrement => None,
+            CombinablePending::FindPrevious
+            | CombinablePending::FindPreviousIncrement => maybe_second,
+        };
+        (first, second)
     }
 }
 

@@ -79,6 +79,10 @@ pub enum GoToAction {
 /// Action that is pending for another keypress
 #[derive(Debug, PartialEq, Eq, Clone, Copy)]
 pub enum OPending {
+    /// Change pending (`c` pressed, waiting for go-to action)
+    Change,
+    /// Change pending and go-to action pending too (e.g. `cf` pressed).
+    ChangeAction(CombinablePending),
     /// Pending action that only requires 1 character to form a goto action.
     ///
     /// Combinable with delete, see [`Self::DeleteAction`].
