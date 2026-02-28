@@ -65,6 +65,36 @@ impl Buffer {
         true
     }
 
+    /// Moves the cursor to the beginning of the previous WORD.
+    #[expect(non_snake_case, reason = "vim wording")]
+    fn goto_beginning_of_WORD(&mut self) {
+        let mut chars =
+            self.as_content().char_indices().rev().skip(self.as_end_index());
+        if let Some(..) = chars.find(|(_, ch)| !ch.is_whitespace())
+            && let Some((idx, _)) = chars.find(|(_, ch)| ch.is_whitespace())
+        {
+            self.cursor.set(idx);
+            self.cursor.increment();
+        } else {
+            self.cursor.set(0);
+        }
+    }
+
+    /// Moves the cursor to the beginning of the previous word.
+    fn goto_beginning_of_word(&mut self) {
+        let mut chars =
+            self.as_content().char_indices().rev().skip(self.as_end_index());
+        if let Some((_, word_ch)) = chars.find(|(_, ch)| !ch.is_whitespace())
+            && let Some((idx, _)) =
+                chars.find(|(_, ch)| xor_ident_char(word_ch, *ch))
+        {
+            self.cursor.set(idx);
+            self.cursor.increment();
+        } else {
+            self.cursor.set(0);
+        }
+    }
+
     /// Moves the cursor to the end of the current or next word.
     #[expect(non_snake_case, reason = "vim wording")]
     fn goto_end_WORD(&mut self) {
@@ -77,6 +107,30 @@ impl Buffer {
             self.cursor.decrement();
         } else {
             self.cursor.set_to_max();
+        }
+    }
+
+    /// Moves the cursor to the end of the previous word.
+    fn goto_end_of_previous_word(&mut self) {
+        let mut chars =
+            self.as_content().char_indices().rev().skip(self.as_end_index());
+        if let Some((_, cursor_ch)) = chars.next()
+            && let Some((idx, next_ch)) =
+                chars.find(|(_, ch)| xor_ident_char(*ch, cursor_ch))
+        {
+            if next_ch.is_whitespace() {
+                if let Some((non_space_idx, _)) =
+                    chars.find(|(_, ch)| !ch.is_whitespace())
+                {
+                    self.cursor.set(non_space_idx);
+                } else {
+                    self.cursor.set(0);
+                }
+            } else {
+                self.cursor.set(idx);
+            }
+        } else {
+            self.cursor.set(0);
         }
     }
 
@@ -128,36 +182,6 @@ impl Buffer {
             }
         } else {
             self.cursor.set_to_max();
-        }
-    }
-
-    /// Moves the cursor to the beginning of the previous WORD.
-    #[expect(non_snake_case, reason = "vim wording")]
-    fn goto_previous_WORD(&mut self) {
-        let mut chars =
-            self.as_content().char_indices().rev().skip(self.as_end_index());
-        if let Some(..) = chars.find(|(_, ch)| !ch.is_whitespace())
-            && let Some((idx, _)) = chars.find(|(_, ch)| ch.is_whitespace())
-        {
-            self.cursor.set(idx);
-            self.cursor.increment();
-        } else {
-            self.cursor.set(0);
-        }
-    }
-
-    /// Moves the cursor to the beginning of the previous word.
-    fn goto_previous_word(&mut self) {
-        let mut chars =
-            self.as_content().char_indices().rev().skip(self.as_end_index());
-        if let Some((_, word_ch)) = chars.find(|(_, ch)| !ch.is_whitespace())
-            && let Some((idx, _)) =
-                chars.find(|(_, ch)| xor_ident_char(word_ch, *ch))
-        {
-            self.cursor.set(idx);
-            self.cursor.increment();
-        } else {
-            self.cursor.set(0);
         }
     }
 
@@ -247,8 +271,8 @@ impl Buffer {
         match goto_action {
             GoToAction::Right => drop(self.cursor.increment()),
             GoToAction::Left => drop(self.cursor.decrement()),
-            GoToAction::Bol => self.cursor.set(0),
-            GoToAction::Eol => self.cursor.set_to_max(),
+            GoToAction::BeginningOfLine => self.cursor.set(0),
+            GoToAction::EndOfLine => self.cursor.set_to_max(),
             GoToAction::FirstNonSpace => self.cursor.set(
                 self.as_content()
                     .char_indices()
@@ -283,10 +307,11 @@ impl Buffer {
             ),
             GoToAction::NextWORD => self.goto_next_WORD(),
             GoToAction::NextWord => self.goto_next_word(),
-            GoToAction::PreviousWORD => self.goto_previous_WORD(),
-            GoToAction::PreviousWord => self.goto_previous_word(),
+            GoToAction::BeginningOfWORD => self.goto_beginning_of_WORD(),
+            GoToAction::BeginningOfWord => self.goto_beginning_of_word(),
             GoToAction::EndWord => self.goto_end_word(),
             GoToAction::EndWORD => self.goto_end_WORD(),
+            GoToAction::EndOfPreviousWord => self.goto_end_of_previous_word(),
         }
         true
     }

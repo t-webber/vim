@@ -11,15 +11,16 @@ pub struct Normal;
 impl HandleKeyPress for Normal {
     fn handle_blank_key_press(&self, code: KeyCode) -> Actions {
         match code {
-            KeyCode::Char('$') => GoToAction::Eol.into(),
-            KeyCode::Char('0') => GoToAction::Bol.into(),
+            KeyCode::Char('$') => GoToAction::EndOfLine.into(),
+            KeyCode::Char('0') => GoToAction::BeginningOfLine.into(),
             KeyCode::Char('^') => GoToAction::FirstNonSpace.into(),
             KeyCode::Char('a') =>
                 vec![GoToAction::Right.into(), Mode::Insert.into()].into(),
-            KeyCode::Char('b') => GoToAction::PreviousWord.into(),
+            KeyCode::Char('b') => GoToAction::BeginningOfWord.into(),
             KeyCode::Char('d') => OPending::Delete.into(),
             KeyCode::Char('e') => GoToAction::EndWord.into(),
             KeyCode::Char('f') => CombinablePending::FindNext.into(),
+            KeyCode::Char('g') => OPending::GoTo.into(),
             KeyCode::Char('h') | KeyCode::Backspace => GoToAction::Left.into(),
             KeyCode::Char('i') => Mode::Insert.into(),
             KeyCode::Char('l') => GoToAction::Right.into(),
@@ -49,9 +50,10 @@ impl HandleKeyPress for Normal {
     fn handle_shift_key_press(&self, code: KeyCode) -> Actions {
         match code {
             KeyCode::Char('A') =>
-                vec![GoToAction::Eol.into(), Mode::Insert.into()].into(),
-            KeyCode::Char('B') => GoToAction::PreviousWORD.into(),
-            KeyCode::Char('D') => Action::Delete(GoToAction::Eol, None).into(),
+                vec![GoToAction::EndOfLine.into(), Mode::Insert.into()].into(),
+            KeyCode::Char('B') => GoToAction::BeginningOfWORD.into(),
+            KeyCode::Char('D') =>
+                Action::Delete(GoToAction::EndOfLine, None).into(),
             KeyCode::Char('E') => GoToAction::EndWORD.into(),
             KeyCode::Char('F') => CombinablePending::FindPrevious.into(),
             KeyCode::Char('I') =>

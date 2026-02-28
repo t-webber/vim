@@ -170,4 +170,12 @@ tilde_empty: "~" => "",
 dd: "iab (pr )'<Esc>bbdd" => "",
 D: "iab (pr )'<Esc>bbD" => "ab (",
 
+ge_empty: "i     <Esc>gei." => ".     ",
+ge_in_word: "iabcd(:)<Esc>gea." => "abcd.(:)",
+ge_whitespace: "iabcd   <Esc>gea." => "abcd.   ",
+ge_words: "iabcd efgh<Esc>gea." => "abcd. efgh",
+g_ignore: "iabc<Esc>gxx" => "ab",
+g_one_word: "i   word<Esc>gei." => ".   word",
+
+
 );

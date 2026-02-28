@@ -76,6 +76,9 @@ impl Mode {
             && let KeyCode::Char(ch) = key_event.code
         {
             match opending {
+                OPending::GoTo if ch == 'e' =>
+                    GoToAction::EndOfPreviousWord.into(),
+                OPending::GoTo => Actions::default(),
                 OPending::CombinablePending(action) => {
                     let (first, maybe_second) =
                         Self::handle_combinable_opending_char_event(action, ch);

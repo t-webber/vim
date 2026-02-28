@@ -45,13 +45,19 @@ impl From<Mode> for Action {
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub enum GoToAction {
     /// Beginning of line (column 0), reached with `0`
-    Bol,
+    BeginningOfLine,
+    /// Move to the beginning of the previous WORD
+    BeginningOfWORD,
+    /// Move to the beginning of the previous word
+    BeginningOfWord,
+    /// End of line, like with `$` and `A`
+    EndOfLine,
+    /// Move to the end of the previous word, reached with `ge`
+    EndOfPreviousWord,
     /// End of current or next WORD, reached with `E`
     EndWORD,
     /// End of current or next word, reached with `e`
     EndWord,
-    /// End of line, like with `$` and `A`
-    Eol,
     /// First non space character, like with `I` and `^`
     FirstNonSpace,
     /// Move the cursor left by one character
@@ -64,10 +70,6 @@ pub enum GoToAction {
     NextWord,
     /// Find previous occurrence of char and place cursor on it
     PreviousOccurrenceOf(char),
-    /// Move to the beginning of the previous WORD
-    PreviousWORD,
-    /// Move to the beginning of the previous word
-    PreviousWord,
     /// Move the cursor right by one character
     Right,
 }
@@ -83,6 +85,8 @@ pub enum OPending {
     Delete,
     /// Delete pending and go-to action pending too (e.g. `df` pressed).
     DeleteAction(CombinablePending),
+    /// Applies a single char action to a motion.
+    GoTo,
     /// Replace one character
     ReplaceOne,
 }

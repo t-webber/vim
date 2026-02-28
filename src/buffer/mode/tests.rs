@@ -64,7 +64,7 @@ fn unsupported_key() {
 
 #[test]
 fn wrong_mode_key() {
-    expect_action(Mode::Normal, code_event(KeyCode::Char('g')), &[]);
+    expect_action(Mode::Normal, code_event(KeyCode::Char('z')), &[]);
     expect_action(Mode::Normal, code_event(KeyCode::Esc), &[]);
 }
 
