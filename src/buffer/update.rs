@@ -29,6 +29,8 @@ impl Buffer {
             self.cursor.set(self.len().saturating_sub(1));
         }
 
+        let is_inclusive =
+            matches!(first, GoToAction::EndWord | GoToAction::EndWORD);
         let (min_cursor, max_cursor) = {
             let old_cursor = self.as_cursor();
             if !self.update_cursor(first) {
@@ -40,10 +42,15 @@ impl Buffer {
                 return false;
             }
             let new_cursor = self.as_cursor();
-            if new_cursor > old_cursor {
+            let (min, max) = if new_cursor > old_cursor {
                 (old_cursor, new_cursor)
             } else {
                 (new_cursor, old_cursor)
+            };
+            if is_inclusive {
+                (min, max.saturating_add(1).min(self.len()))
+            } else {
+                (min, max)
             }
         };
         let old_content = take(&mut self.content);

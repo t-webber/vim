@@ -150,4 +150,16 @@ E_num_under: "ia0b_c2d, <Esc>0Eaz" => "a0b_c2d,z ",
 E_double_symbols: "iabc!!def <Esc>0Ea.<Esc>Ea." => "abc!!def. .",
 E_end_of: "ia b<Esc>0Eac" => "a bc",
 
+de_space: "iabc def<Esc>0de" => " def",
+de_symbol: "iabc!def<Esc>0de" => "!def",
+de_symbol_word: "i(:)abc<Esc>0de" => "abc",
+de_empty: "i   <Esc>0de" => "",
+de_end: "iab(:) de<Esc>0de" => "(:) de",
+
+dE_space: "iabc def<Esc>0dE" => " def",
+dE_symbol: "iabc!def<Esc>0dE" => "",
+dE_symbol_word: "i(:)abc<Esc>0dE" => "",
+dE_empty: "i   <Esc>0dE" => "",
+dE_end: "iab(:) de<Esc>0dE" => " de",
+
 );
