@@ -174,10 +174,22 @@ D: "iab (pr )'<Esc>bbD" => "ab (",
 
 g_ignore: "iabc<Esc>gxx" => "ab",
 
-ge_empty: "i     <Esc>gei." => ".     ",
+ge_empty: "gei." => ".",
+ge_only_space: "i     <Esc>gei." => ".     ",
 ge_in_word: "iabcd(:)<Esc>gea." => "abcd.(:)",
 ge_whitespace: "iabcd   <Esc>gea." => "abcd.   ",
+ge_single_whitespace: "iabcd <Esc>gea." => "abcd. ",
 ge_words: "iabcd efgh<Esc>gea." => "abcd. efgh",
 ge_one_word: "i   word<Esc>gei." => ".   word",
+ge_no_space: "iabcdef<Esc>gei." => ".abcdef",
+
+gE_empty: "gEi." => ".",
+gE_only_space: "i     <Esc>gEi." => ".     ",
+gE_in_word: "iabcd(:)<Esc>gEa." => "a.bcd(:)",
+gE_whitespace: "iabcd   <Esc>gEa." => "abcd.   ",
+gE_single_whitespace: "iabcd <Esc>gEa." => "abcd. ",
+gE_words: "iabcd efgh<Esc>gEa." => "abcd. efgh",
+gE_one_word: "i   word<Esc>gEi." => ".   word",
+gE_no_space: "iabcdef<Esc>gEi." => ".abcdef",
 
 );

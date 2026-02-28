@@ -52,6 +52,8 @@ pub enum GoToAction {
     BeginningOfWord,
     /// End of line, like with `$` and `A`
     EndOfLine,
+    /// Move to the end of the previous WORD, reached with `gE`
+    EndOfPreviousWORD,
     /// Move to the end of the previous word, reached with `ge`
     EndOfPreviousWord,
     /// End of current or next WORD, reached with `E`

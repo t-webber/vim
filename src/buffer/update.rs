@@ -110,28 +110,41 @@ impl Buffer {
         }
     }
 
+    /// Moves the cursor to the end of the previous WORD.
+    #[expect(non_snake_case, reason = "vim wording")]
+    fn goto_end_of_previous_WORD(&mut self) {
+        let idx = self
+            .as_content()
+            .char_indices()
+            .rev()
+            .skip(self.as_end_index().saturating_sub(1))
+            .skip_while(|(_, ch)| !ch.is_whitespace())
+            .find(|(_, ch)| !ch.is_whitespace())
+            .map_or(0, |(i, _)| i);
+        self.cursor.set(idx);
+    }
+
     /// Moves the cursor to the end of the previous word.
     fn goto_end_of_previous_word(&mut self) {
-        let mut chars =
-            self.as_content().char_indices().rev().skip(self.as_end_index());
-        if let Some((_, cursor_ch)) = chars.next()
-            && let Some((idx, next_ch)) =
-                chars.find(|(_, ch)| xor_ident_char(*ch, cursor_ch))
-        {
-            if next_ch.is_whitespace() {
-                if let Some((non_space_idx, _)) =
-                    chars.find(|(_, ch)| !ch.is_whitespace())
-                {
-                    self.cursor.set(non_space_idx);
-                } else {
-                    self.cursor.set(0);
-                }
-            } else {
-                self.cursor.set(idx);
+        let mut chars = self
+            .as_content()
+            .char_indices()
+            .rev()
+            .skip(self.as_end_index().saturating_sub(1));
+        let Some((_, cursor_ch)) = chars.next() else {
+            return self.cursor.set(0);
+        };
+        if !cursor_ch.is_whitespace() {
+            match chars.find(|(_, ch)| xor_ident_char(*ch, cursor_ch)) {
+                None => return self.cursor.set(0),
+                Some((idx, ch)) if !ch.is_whitespace() =>
+                    return self.cursor.set(idx),
+                Some(_) => {}
             }
-        } else {
-            self.cursor.set(0);
         }
+        let idx =
+            chars.find(|(_, ch)| !ch.is_whitespace()).map_or(0, |(i, _)| i);
+        self.cursor.set(idx);
     }
 
     /// Moves the cursor to the end of the current or next word.
@@ -318,6 +331,7 @@ impl Buffer {
             GoToAction::EndWord => self.goto_end_word(),
             GoToAction::EndWORD => self.goto_end_WORD(),
             GoToAction::EndOfPreviousWord => self.goto_end_of_previous_word(),
+            GoToAction::EndOfPreviousWORD => self.goto_end_of_previous_WORD(),
         }
         true
     }
