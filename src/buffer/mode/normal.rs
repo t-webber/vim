@@ -35,7 +35,9 @@ impl HandleKeyPress for Normal {
             KeyCode::Char('t') => CombinablePending::FindNextDecrement.into(),
             KeyCode::Char('u') => Action::Undo.into(),
             KeyCode::Char('w') => GoToAction::NextWord.into(),
-            KeyCode::Char('~') => Action::ToggleCapitalisation.into(),
+            KeyCode::Char('~') =>
+                vec![Action::ToggleCapitalisation, GoToAction::Right.into()]
+                    .into(),
             _ => Actions::default(),
         }
     }

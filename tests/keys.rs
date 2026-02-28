@@ -164,18 +164,20 @@ dE_empty: "i   <Esc>0dE" => "",
 dE_end: "iab(:) de<Esc>0dE" => " de",
 
 tilde: "ia<Esc>~" => "A",
+tilde_double: "iabc<Esc>0~~" => "ABc",
+tilde_too_many: "iab<Esc>0~~~" => "Ab",
 tilde_invalid: "i(<Esc>~" => "(",
 tilde_empty: "~" => "",
 
 dd: "iab (pr )'<Esc>bbdd" => "",
 D: "iab (pr )'<Esc>bbD" => "ab (",
 
+g_ignore: "iabc<Esc>gxx" => "ab",
+
 ge_empty: "i     <Esc>gei." => ".     ",
 ge_in_word: "iabcd(:)<Esc>gea." => "abcd.(:)",
 ge_whitespace: "iabcd   <Esc>gea." => "abcd.   ",
 ge_words: "iabcd efgh<Esc>gea." => "abcd. efgh",
-g_ignore: "iabc<Esc>gxx" => "ab",
-g_one_word: "i   word<Esc>gei." => ".   word",
-
+ge_one_word: "i   word<Esc>gei." => ".   word",
 
 );

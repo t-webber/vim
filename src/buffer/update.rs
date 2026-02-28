@@ -203,8 +203,14 @@ impl Buffer {
             false
         } else {
             // PERF: string characters are copied twice.
-            let old = self.content.remove(self.as_cursor());
-            self.content.insert(self.as_cursor(), replace(old));
+            let cursor = self.as_cursor();
+            let last_char_idx = if cursor == self.len() {
+                cursor.saturating_sub(1)
+            } else {
+                cursor
+            };
+            let old = self.content.remove(last_char_idx);
+            self.content.insert(last_char_idx, replace(old));
             true
         }
     }
