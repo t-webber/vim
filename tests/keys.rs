@@ -210,6 +210,12 @@ cdollar_end: "iabc def<Esc>c$" => "abc de",
 cdollar_middle: "iabc def<Esc>hhhhc$" => "ab",
 cdollar_insert: "iabc def<Esc>0c$ghi" => "ghi",
 
+C_empty: "C" => "",
+C_start: "iabc def<Esc>0C" => "",
+C_end: "iabc def<Esc>C" => "abc de",
+C_middle: "iabc def<Esc>hhhhC" => "ab",
+C_insert: "iabc def<Esc>0Cghi" => "ghi",
+
 ccaret_empty: "c^" => "",
 ccaret_end: "i  abc<Esc>c^" => "  c",
 ccaret_start: "iabc<Esc>0c^" => "abc",

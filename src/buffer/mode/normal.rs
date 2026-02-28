@@ -55,6 +55,11 @@ impl HandleKeyPress for Normal {
             KeyCode::Char('A') =>
                 vec![GoToAction::EndOfLine.into(), Mode::Insert.into()].into(),
             KeyCode::Char('B') => GoToAction::BeginningOfWORD.into(),
+            KeyCode::Char('C') => vec![
+                Action::Delete(GoToAction::EndOfLine, None),
+                Mode::Insert.into(),
+            ]
+            .into(),
             KeyCode::Char('D') =>
                 Action::Delete(GoToAction::EndOfLine, None).into(),
             KeyCode::Char('E') => GoToAction::EndWORD.into(),
