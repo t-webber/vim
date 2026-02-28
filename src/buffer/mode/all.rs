@@ -98,6 +98,8 @@ impl Mode {
                     }
                     Actions::OPending(OPending::CombinablePending(action)) =>
                         OPending::DeleteAction(action).into(),
+                    Actions::OPending(OPending::Delete) =>
+                        Action::DeleteLine.into(),
                     Actions::OPending(_) => Actions::default(),
                 },
                 OPending::DeleteAction(action) => {

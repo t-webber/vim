@@ -167,4 +167,7 @@ tilde: "ia<Esc>~" => "A",
 tilde_invalid: "i(<Esc>~" => "(",
 tilde_empty: "~" => "",
 
+dd: "iab (pr )'<Esc>bbdd" => "",
+D: "iab (pr )'<Esc>bbD" => "ab (",
+
 );

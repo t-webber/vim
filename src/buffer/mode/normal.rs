@@ -4,36 +4,36 @@ use crate::buffer::keymaps::{Action, CombinablePending, GoToAction, OPending};
 use crate::buffer::mode::all::Mode;
 use crate::buffer::mode::traits::{Actions, HandleKeyPress};
 
-/// Struct to handle keypresses in insert mode
+/// Struct to handle keypresses in normal mode
 pub struct Normal;
 
 #[expect(clippy::wildcard_enum_match_arm, reason = "only support a few")]
 impl HandleKeyPress for Normal {
     fn handle_blank_key_press(&self, code: KeyCode) -> Actions {
         match code {
+            KeyCode::Char('$') => GoToAction::Eol.into(),
+            KeyCode::Char('0') => GoToAction::Bol.into(),
+            KeyCode::Char('^') => GoToAction::FirstNonSpace.into(),
             KeyCode::Char('a') =>
                 vec![GoToAction::Right.into(), Mode::Insert.into()].into(),
+            KeyCode::Char('b') => GoToAction::PreviousWord.into(),
+            KeyCode::Char('d') => OPending::Delete.into(),
+            KeyCode::Char('e') => GoToAction::EndWord.into(),
+            KeyCode::Char('f') => CombinablePending::FindNext.into(),
+            KeyCode::Char('h') | KeyCode::Backspace => GoToAction::Left.into(),
             KeyCode::Char('i') => Mode::Insert.into(),
+            KeyCode::Char('l') => GoToAction::Right.into(),
             KeyCode::Char('x') => Action::DeleteNextChar.into(),
+            KeyCode::Char('r') => OPending::ReplaceOne.into(),
             KeyCode::Char('s') => vec![
                 GoToAction::Right.into(),
                 Action::DeletePreviousChar,
                 Mode::Insert.into(),
             ]
             .into(),
-            KeyCode::Backspace | KeyCode::Char('h') => GoToAction::Left.into(),
-            KeyCode::Char('l') => GoToAction::Right.into(),
-            KeyCode::Char('f') => CombinablePending::FindNext.into(),
             KeyCode::Char('t') => CombinablePending::FindNextDecrement.into(),
-            KeyCode::Char('r') => OPending::ReplaceOne.into(),
-            KeyCode::Char('0') => GoToAction::Bol.into(),
-            KeyCode::Char('^') => GoToAction::FirstNonSpace.into(),
-            KeyCode::Char('$') => GoToAction::Eol.into(),
-            KeyCode::Char('w') => GoToAction::NextWord.into(),
-            KeyCode::Char('b') => GoToAction::PreviousWord.into(),
-            KeyCode::Char('e') => GoToAction::EndWord.into(),
             KeyCode::Char('u') => Action::Undo.into(),
-            KeyCode::Char('d') => OPending::Delete.into(),
+            KeyCode::Char('w') => GoToAction::NextWord.into(),
             KeyCode::Char('~') => Action::ToggleCapitalisation.into(),
             _ => Actions::default(),
         }
@@ -48,20 +48,21 @@ impl HandleKeyPress for Normal {
 
     fn handle_shift_key_press(&self, code: KeyCode) -> Actions {
         match code {
+            KeyCode::Char('A') =>
+                vec![GoToAction::Eol.into(), Mode::Insert.into()].into(),
+            KeyCode::Char('B') => GoToAction::PreviousWORD.into(),
+            KeyCode::Char('D') => Action::Delete(GoToAction::Eol, None).into(),
+            KeyCode::Char('E') => GoToAction::EndWORD.into(),
+            KeyCode::Char('F') => CombinablePending::FindPrevious.into(),
             KeyCode::Char('I') =>
                 vec![GoToAction::FirstNonSpace.into(), Mode::Insert.into()]
                     .into(),
-            KeyCode::Char('A') =>
-                vec![GoToAction::Eol.into(), Mode::Insert.into()].into(),
-            KeyCode::Char('X') => Action::DeletePreviousChar.into(),
             KeyCode::Char('S') =>
                 vec![Action::DeleteLine, Mode::Insert.into()].into(),
-            KeyCode::Char('F') => CombinablePending::FindPrevious.into(),
             KeyCode::Char('T') =>
                 CombinablePending::FindPreviousIncrement.into(),
             KeyCode::Char('W') => GoToAction::NextWORD.into(),
-            KeyCode::Char('B') => GoToAction::PreviousWORD.into(),
-            KeyCode::Char('E') => GoToAction::EndWORD.into(),
+            KeyCode::Char('X') => Action::DeletePreviousChar.into(),
             _ => Actions::default(),
         }
     }
